@@ -11,7 +11,12 @@ const NODE_CONFIG = {
 		color: "white",
 		label: "Action",
 		icon: "<&pulse>",
-		mermaidIcon: "⚡" ,
+		mermaidIcon: {
+			"apex": ">_",
+			"emailSimple": "✉",
+			"submit": "⚡"
+
+		},
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
@@ -54,6 +59,15 @@ const NODE_CONFIG = {
 		label: "Update Records",
 		icon: "<&pencil>",
 		mermaidIcon: "📝" ,
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
+	'screens': {
+		background: "#1B96FF",
+		color: "white",
+		label: "Screen",
+		icon: "<&pencil>",
+		mermaidIcon: "💻" ,
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
@@ -208,7 +222,8 @@ async function createFlowMap(flowObj) {
 								nextNodeLabel: el.defaultConnectorLabel,
 								nextValueConnector : (el.nextValueConnector) ?
 									el.nextValueConnector.targetReference : null,
-								rules: el.rules2
+								rules: el.rules2,
+								actionType: el.actionType
 							}
 							flowMap[el.name] = mappedEl;
 						} else if (property === 'variables') {
@@ -307,6 +322,7 @@ async function getMermaidBody(flowMap) {
 			case 'assignments':
 			case 'recordCreates':
 			case 'recordUpdates':
+			case 'screens':
 				bodyStr += node.name + " --> " + nextNode + "\n";
 				break;
 			case 'start':
@@ -339,14 +355,18 @@ async function getNodeDefStr(flowMap) {
 	let nodeDefStr = "\START(( START ))\n";
 	for (const property in flowMap) {
 		const type = flowMap[property].type;
+		console.log("type", type);
+		let icon = (NODE_CONFIG[type]) ? NODE_CONFIG[type].mermaidIcon : null;
 		switch (type) {
 			case 'actionCalls':
+				icon = NODE_CONFIG[type].mermaidIcon[flowMap[property].actionType];
 			case 'assignments':
 			case 'decisions':
 			case 'loops':
 			case 'recordCreates':
 			case 'recordUpdates':
-			nodeDefStr += property + NODE_CONFIG[type].mermaidOpen + NODE_CONFIG[type].mermaidIcon + "\n" + flowMap[property].label + NODE_CONFIG[type].mermaidClose + ":::" + type + "\n"
+			case 'screens':
+			nodeDefStr += property + NODE_CONFIG[type].mermaidOpen + icon + "\n" + flowMap[property].label + NODE_CONFIG[type].mermaidClose + ":::" + type + "\n"
 				break;
 			default:
 				// do nothing
@@ -358,6 +378,7 @@ async function getNodeDefStr(flowMap) {
 
 async function getVariablesMd(vars) {
 	let vStr = "## Variables\n|Name|Datatype|Collection|Input|Output|\n|-|-|-|-|-|\n";
+	if (!vars) vars = [];
 	for (const v of vars) {
 		vStr += "|" + v.name + "|" + v.dataType + "|" + v.isCollection + "|" + v.isInput + "|" + v.isOutput + "|\n";
 	}
