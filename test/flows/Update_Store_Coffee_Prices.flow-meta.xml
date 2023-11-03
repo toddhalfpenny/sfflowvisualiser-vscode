@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionCalls>
+        <name>Update_Coffee_Prices</name>
+        <label>Update Coffee Prices</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>StoreTriggerHandler</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Updated_Prices</targetReference>
+        </connector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>coffee</name>
+            <value>
+                <elementReference>Coffee_to_get_prices_for</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <description>Retrieves the latest coffee prices for a store</description>
+    <dynamicChoiceSets>
+        <description>The types of coffee for a given store</description>
+        <name>TypesofCoffee</name>
+        <dataType>Multipicklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Types_of_Coffee__c</picklistField>
+        <picklistObject>Store__c</picklistObject>
+    </dynamicChoiceSets>
+    <interviewLabel>Update Store Coffee Prices {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Store Coffee Prices</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <description>Choose which coffee to get prices for</description>
+        <name>Coffee_Selection</name>
+        <label>Coffee Selection</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>Update_Coffee_Prices</targetReference>
+        </connector>
+        <fields>
+            <name>Coffee_to_get_prices_for</name>
+            <choiceReferences>TypesofCoffee</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Coffee to get prices for</fieldText>
+            <fieldType>MultiSelectCheckboxes</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Updated_Prices</name>
+        <label>Updated Prices</label>
+        <locationX>176</locationX>
+        <locationY>398</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>Prices</name>
+            <fieldText>&lt;p&gt;{!Update_Coffee_Prices.prices}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Coffee_Selection</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+</Flow>
