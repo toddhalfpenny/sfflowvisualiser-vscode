@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_Email_to_Supplier</name>
+        <label>Send Email to Supplier</label>
+        <locationX>264</locationX>
+        <locationY>398</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Loop_through_Suppliers</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>Congrats on your new order with Wired Brain Coffee! It&apos;s been a pleasure doing business with you!</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>Loop_through_Suppliers.Primary_Contact_Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>ThankYou</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <assignments>
+        <name>Thank_You_Message</name>
+        <label>Thank You Message</label>
+        <locationX>264</locationX>
+        <locationY>278</locationY>
+        <assignmentItems>
+            <assignToReference>ThankYou</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Thank You {!Loop_through_Suppliers.Name}</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Email_to_Supplier</targetReference>
+        </connector>
+    </assignments>
+    <description>Send an email to the supplier when a new order has been placed. This will be called from Apex</description>
+    <interviewLabel>New Order Email to Supplier {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>New Order Email to Supplier</label>
+    <loops>
+        <name>Loop_through_Suppliers</name>
+        <label>Loop through Suppliers</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <collectionReference>SupplierList</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Thank_You_Message</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Loop_through_Suppliers</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>SupplierList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+    <variables>
+        <name>ThankYou</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Thank You</stringValue>
+        </value>
+    </variables>
+</Flow>
