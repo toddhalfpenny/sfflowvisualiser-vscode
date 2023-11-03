@@ -4,6 +4,40 @@ const vscode = require('vscode');
 const { XMLParser } = require("fast-xml-parser");
 
 
+const NODE_CONFIG = {
+	'actionCalls': {
+		background: "#344568",
+		color: "white",
+		label: "Action",
+		icon: "<&pulse>"
+	},
+	'assignments': {
+		background: "#F97924",
+		color: "white",
+		label: "Assignment",
+		icon: "<&menu>"
+	},
+	'decisions': {
+		background: "#DD7A00",
+		color: "white",
+		label: "Decision",
+		icon: "<&fork>"
+	},
+	'loops': {},
+	'recordCreates': {
+		background: "#F9548A",
+		color: "white",
+		label: "Create Records",
+		icon: "<&medical-cross>"
+	},
+	'recordUpdates': {
+		background: "#F9548A",
+		color: "white",
+		label: "Update Records",
+		icon: "<&pencil>"
+	},
+};
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -23,18 +57,21 @@ function activate(context) {
 function deactivate() {}
 
 async function generatePlantUMLPreview() {
-	const uml = await generatePlantUML();
+	const {flowMap,uml} = await generatePlantUML();
 
 	// Create tempfile with plant UML contents
-	let setting = vscode.Uri.parse("untitled:" + "flow2plantuml.tmp");
+	let setting = vscode.Uri.parse("untitled:" + flowMap['label'].replaceAll(' ', '-').toLowerCase() + ".puml");
 	try {
 		const doc = await vscode.workspace.openTextDocument(setting);
 		const e = await vscode.window.showTextDocument(doc, 1, false);
-		e.edit(edit => {
-			edit.insert(new vscode.Position(0, 0), uml);
+		e.edit(async edit => {
+			await edit.insert(new vscode.Position(0, 0), uml);
 
 			// Run plantuml.preview (this calls Jebbs' extension)
-			vscode.commands.executeCommand("plantuml.preview");
+			setTimeout(() => {
+				vscode.commands.executeCommand("plantuml.preview");
+			}, 200);
+			
 		});
 	} catch (error) {
 		console.error(error);
@@ -52,7 +89,7 @@ async function generatePlantUML() {
 	const flowMap = await createFlowMap(flowObj);
 	console.log(JSON.stringify(flowMap));
 
-	const START_STR = "' THIS IS A TEMPORARY FILE\n@startuml\nstart\n";
+	const START_STR = "' THIS IS A TEMPORARY FILE\n@startuml " + flowMap['label'] + "\nstart\n";
 	const TITLE_STR = "title " + flowMap['label'] + "\n";
 	let nextNode = flowMap[flowMap['start'].connector.targetReference];
 	let end = false;
@@ -69,7 +106,10 @@ async function generatePlantUML() {
 		i++;
 	}
 	const END_STR = "stop\n@enduml";
-	return START_STR + TITLE_STR + bodyStr + END_STR;
+	return {
+		flowMap: flowMap,
+		uml: START_STR + TITLE_STR + bodyStr + END_STR
+	};
 }
 
 async function createFlowMap(flowObj) {
@@ -91,28 +131,39 @@ async function createFlowMap(flowObj) {
 					// console.log("el" , el)
 					if (el.name) {
 						let nextNode;
-						let isNode = false;
 						switch (property) {
+							case 'decisions':
+								nextNode = (el.defaultConnector) ? el.defaultConnector.targetReference : null;
+								let tmpRules = (el.rules.length) ? el.rules : [el.rules];
+								el.rules2 = tmpRules.map(ruleEl =>{
+									return {
+										name: ruleEl.name,
+										label: ruleEl.label,
+										nextNode: ruleEl.connector,
+										nextNodeLabel: el.defaultConnectorLabel,
+									}
+								});
+								break;	
 							case 'loops':
-								isNode = true;
 								nextNode = (el.connector) ? el.connector.targetReference : null;
 								break;					
 							default:
 								if (el.connector) {
-									isNode = true;
 									nextNode =  el.connector.targetReference;
 								}
 								break;
 						}
 
-						if (isNode) {
+						if (NODE_CONFIG[property]) {
 							const mappedEl = {
 								name: el.name,
 								label: el.label,
 								type: property,
 								nextNode: nextNode,
+								nextNodeLabel: el.defaultConnectorLabel,
 								nextValueConnector : (el.nextValueConnector) ?
-									el.nextValueConnector.targetReference : null
+									el.nextValueConnector.targetReference : null,
+								rules: el.rules2
 							}
 							flowMap[el.name] = mappedEl;
 						}
@@ -129,17 +180,37 @@ async function createFlowMap(flowObj) {
 
 function getNodeStr(node, flowMap) {
 	console.log("getNodeStr", node);
+	let nextNode;
+	let end;
 	switch (node.type) {
-		case 'actionCalls' :
-			return "#344568:<color:white><size:30><&pulse></size>;\nfloating note left\n**" + node.name + "**\nAction\nend note\n";
-		case 'assignments' :
-			return "#F97924:<color:white><size:30><&menu></size>;\nfloating note left\n**" + node.name + "**\nAssignment\nend note\n";
+		case 'decisions':
+			const START_STR = "switch (" + node.label + ")\n"
+			const DEFATAULT_STR = "\ncase (" + node.nextNodeLabel + ")\n";
+
+			let rulesStr = "";
+			for (const rule of node.rules ) {
+				rulesStr += "case (" + rule.label + ")\n";
+
+				nextNode = nextNode = flowMap[rule.nextNode.targetReference];
+				end = false;
+				while (!end) {
+					console.log("nextNode2", nextNode);
+					rulesStr += getNodeStr(nextNode);
+					if (!nextNode.nextNode || nextNode.nextNode === node.nextNode) {
+						end = true;
+					} else {
+						nextNode = flowMap[nextNode.nextNode]
+					}
+				}
+			}
+			const END_STR = "endswitch\n";
+			return START_STR + rulesStr + DEFATAULT_STR + END_STR;
 		case 'loops':
 			let loopName = node.name;
 			console.log("in loop", loopName);
-			let nextNode = flowMap[node.nextValueConnector];
+			nextNode = flowMap[node.nextValueConnector];
 			let bodyStr = "floating note left: " + loopName + "\n repeat :<size:30><&loop-circular></size>;\n";
-			let end = false;
+			end = false;
 			while (!end) {
 				console.log("nextNode2", nextNode);
 				bodyStr += getNodeStr(nextNode);
@@ -151,7 +222,12 @@ function getNodeStr(node, flowMap) {
 			}
 			return bodyStr + "repeat while (more data?)\n";
 		default:
-			return "' " + node.name + "\n";
+			if (NODE_CONFIG[node.type]) {
+				const cnf = NODE_CONFIG[node.type];
+				return cnf.background + ":<color:" + cnf.color + "><size:30>" + cnf.icon + "</size>;\nfloating note left\n**" + node.label + "**\n" + cnf.label + "\nend note\n";
+			} else {
+				return "' " + node.name + " NOT IMPLEMENTED \n";
+			}
 	}
 }
 
