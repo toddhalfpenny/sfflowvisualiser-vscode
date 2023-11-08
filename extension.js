@@ -40,7 +40,7 @@ async function generatePreview(mode) {
 
 			switch (mode) {
 				case 'mermaid':
-					vscode.commands.executeCommand('markdown.showPreview', setting);
+					vscode.commands.executeCommand('markdown.showPreviewToSide', setting);
 					break;
 				default:				
 					// Run plantuml.preview (this calls Jebbs' extension)
