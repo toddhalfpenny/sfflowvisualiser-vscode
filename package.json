@@ -3,9 +3,9 @@
   "displayName": "Salesforce Flow Visualiser",
   "description": "Salesforce Flow Visualiser VS Code extension",
   "icon": "images/icon.png",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.83.0"
   },
   "categories": [
     "Visualization",

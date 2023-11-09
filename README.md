@@ -26,6 +26,12 @@ There aren't currently any settings for this extension.
 
 Users appreciate release notes as you update your extension.
 
+
+### 0.1.2
+
+- Minimum VSCode engine lowered
+
+
 ### 0.1.0
 
 - Support for special mermaid chars in node labels (e.g braces)

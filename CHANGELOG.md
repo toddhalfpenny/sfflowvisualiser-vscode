@@ -3,10 +3,21 @@
 All notable changes to the "sfflowvisualiser" extension will be documented in this file.
 
 
+### 0.1.2
+
+- Minimum VSCode engine lowered
+
+
+### 0.1.1
+
+- Non pre-release
+
+
 ### 0.1.0
 
 #### Bug fixes
 - Support for special mermaid chars in node labels (e.g braces). Done via update to a dep lib
+
 
 ## 0.0.2
 
