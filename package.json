@@ -2,16 +2,24 @@
   "name": "sfflowvisualiser",
   "displayName": "Salesforce Flow Visualiser",
   "description": "Salesforce Flow Visualiser VS Code extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.84.0"
   },
   "categories": [
-    "Visualization", "Formatters"
+    "Visualization",
+    "Formatters"
   ],
-  "keywords": ["Salesforce", "Flow", "Visualiser", "Visualizer", "Mermaid", "Diagram"],
+  "keywords": [
+    "Salesforce",
+    "Flow",
+    "Visualiser",
+    "Visualizer",
+    "Mermaid",
+    "Diagram"
+  ],
   "activationEvents": [],
-  "main": "./extension.js",
+  "main": "/out/main.js",
   "contributes": {
     "commands": [
       {
@@ -28,25 +36,39 @@
       ]
     }
   },
+  "author": "Todd Halfpenny",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:toddhalfpenny/sfflowvisualiser-vscode.git"
+  },
+  "publisher": "ToddHalfpenny",
   "extensionDependencies": [
-    "vstirbu.vscode-mermaid-preview"
+    "bierner.markdown-mermaid"
   ],
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "node ./test/runTest.js"
+    "test": "node ./test/runTest.js",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild src/extension.js --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
     "@types/vscode": "^1.83.0",
     "@vscode/test-electron": "^2.3.6",
+    "esbuild": "^0.19.5",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.3.2"
+    "fast-xml-parser": "^4.3.2",
+    "salesforce-flow-visualiser": "file:../salesforce-flow-visualiser"
   }
 }

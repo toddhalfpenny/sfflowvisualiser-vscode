@@ -8,13 +8,11 @@ It provides a markdown (`.md`) file with a graphical languages representation of
 
 As well as a graphical view of the flow some basic flow information is also output, such as the Flow name, type, and details on the variables defined within it.
 
-![Screenshot of a rendered .md file and the preview](images/readme-image.jpg)
-
 There are several other extensions that can be used in conjunction with this if you want to export the created markdown (`.md`) file's mermaid contents to an image file.
 
 ## Requirements
 
-This extension relies on the [Mermaid Preview](https://marketplace.visualstudio.com/items?itemName=vstirbu.vscode-mermaid-preview) extension also being installed.
+This extension relies on the [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension also being installed.
 
 ## Extension Settings
 
@@ -28,6 +26,10 @@ There aren't currently any settings for this extension.
 
 Users appreciate release notes as you update your extension.
 
-### 0.0.1
+### 0.0.2
+
+- Fixed incorrect dep
+
+## 0.0.1
 
 * Initial pre-release version
