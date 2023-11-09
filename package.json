@@ -2,7 +2,7 @@
   "name": "sfflowvisualiser",
   "displayName": "Salesforce Flow Visualiser",
   "description": "Salesforce Flow Visualiser VS Code extension",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.84.0"
   },
