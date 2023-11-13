@@ -14,6 +14,13 @@ There are several other extensions that can be used in conjunction with this if 
 
 This extension relies on the [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension also being installed.
 
+## Using Salesforce Flow Visualizer
+
+- Open desired `flow-meta.xml` file in VS Code.
+- Open command palette `Ctrl+Shift+P` (Win) or `Command+Shift+P` (Mac)
+- Enter Flow Visualizer: Mermaid, hit enter
+- A markdown file appears containing the diagram
+
 ## Extension Settings
 
 There aren't currently any settings for this extension.
