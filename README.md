@@ -10,6 +10,12 @@ As well as a graphical view of the flow some basic flow information is also outp
 
 There are several other extensions that can be used in conjunction with this if you want to export the created markdown (`.md`) file's mermaid contents to an image file.
 
+## Usage
+
+1. Have a Salesforce Flow `.flow-meta.xml` file open.
+1. Open the VS Code *Command palette* with **SHIFT+CTRL+P**.
+1. Run the *Flow Visualiser: Mermaid* command.
+
 ## Requirements
 
 This extension relies on the [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension also being installed.
