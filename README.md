@@ -37,6 +37,9 @@ There aren't currently any settings for this extension.
 
 Users appreciate release notes as you update your extension.
 
+### 0.2.2
+- Added missing icon
+
 ### 0.2.1
 - Moved to a webview to render the information and flow
 - Output includes Constants, Variable and TextTemplates
