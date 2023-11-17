@@ -1,5 +1,4 @@
 .vscode/**
-node_modules
 .vscode-test/**
 test/**
 src/**
@@ -12,4 +11,3 @@ src/**
 **/*.d.ts
 .git/**
 package.lock.json
-!node_modules/fast-xml-parser

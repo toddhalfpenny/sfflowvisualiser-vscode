@@ -2,7 +2,7 @@
   "name": "sfflowvisualiser",
   "displayName": "Salesforce Flow Visualiser",
   "description": "Salesforce Flow Visualiser VS Code extension",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engines": {
     "vscode": "^1.83.0"
   },
@@ -45,7 +45,8 @@
   "publisher": "ToddHalfpenny",
   "extensionDependencies": [],
   "scripts": {
-    "vscode:prepublish": "npm run package",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "compile": "node ./esbuild.js",
     "package": "NODE_ENV=production node ./esbuild.js",
     "watch": "node ./esbuild.js --watch",
@@ -70,6 +71,6 @@
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "mermaid": "10.4.0",
-    "salesforce-flow-visualiser": "github:toddhalfpenny/salesforce-flow-visualiser"
+    "salesforce-flow-visualiser": "^1.0.0"
   }
 }

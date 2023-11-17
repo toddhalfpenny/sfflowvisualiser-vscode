@@ -266,13 +266,20 @@ export class FlowPanel {
           <summary >Formulas</summary>
       `;
       for (const formula of formulas) {
+        // TEMP - THIS IS WHAT WE WERE DOING BUT It's coming from our lib wrong.
+        // Issue is that this converts all special chars back to HTML entities, and they might not be like that in the XML
+        // var decoded = this.encodeHTML(formula.expression);
+
+        console.log(formula.expression);
+        var decoded = formula.expression.replaceAll('"', '&quot;');
+
         formulaStr += /*html*/ ` 
           <div class="formula-item">
             <div>
               <p><label>Name:</label>${formula.name}</p> 
               <p><label>Data type:</label>${formula.dataType}</p>
             </div>
-            <vscode-text-area class="formula" readonly cols="50" resize="both" value="${formula.expression}"></vscode-text-area>
+            <vscode-text-area class="formula" readonly cols="50" resize="both" value="${decoded}"></vscode-text-area>
           </div>
         `;
       }
@@ -281,6 +288,23 @@ export class FlowPanel {
     } else {
       return "";
     }
+  }
+
+  private encodeHTML(str:any) {
+    const code = {
+        ' ' : 'nbsp;',
+        '¢' : 'cent;',
+        '£' : 'pound;',
+        '¥' : 'yen;',
+        '€' : 'euro;', 
+        '©' : 'copy;',
+        '®' : 'reg;',
+        '<' : 'lt;', 
+        '>' : 'gt;',  
+        '"' : 'quot;', 
+        '\'' : 'apos;'
+    };
+    return str.replace(/[\u00A0-\u9999<>\&''""]/gm, (i:any)=>"&amp;" + (<any>code)[i]);
   }
 
   

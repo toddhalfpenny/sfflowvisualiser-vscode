@@ -4,15 +4,26 @@ A VS Code extension to create a visual represenation of Salesforce Flow `.flow-m
 
 ## Features
 
-It provides a markdown (`.md`) file with a graphical languages representation of the flow. The default is [Mermaid](https://mermaid.js.org/).
+It provides an easy to use representation of Salesforce Flow files. As well as a graphical view of the flow itself it also ouputs;
+* Start Condiitions
+* Resources:
+  * Constants
+  * Text Templates
+  * Variables
 
-As well as a graphical view of the flow some basic flow information is also output, such as the Flow name, type, and details on the variables defined within it.
+You can zoom in/out on the flow itself, and can also save the image to a .png file. 
 
-There are several other extensions that can be used in conjunction with this if you want to export the created markdown (`.md`) file's mermaid contents to an image file.
+## Usage
+
+1. Have a Salesforce Flow `.flow-meta.xml` file open.
+1. Open the VS Code *Command palette* with **SHIFT+CTRL+P**.
+1. Run the *Flow Visualiser: Render* command.
 
 ## Requirements
 
-This extension relies on the [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension also being installed.
+The v0.2 extension does not require any other extensions to be installed.
+
+The v0.1 extension relied on the [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension also being installed.
 
 ## Extension Settings
 
@@ -20,11 +31,20 @@ There aren't currently any settings for this extension.
 
 ## Known Issues
 
-There aren't currently any settings for this extension.
+* HTML Special Characters (e.g. `&quot;`) are being represented as their decoded versions( e.g ` " `). I believe this is down to the `fast-xml-parser` lib that's being used downstream - it's on the list to look at.
 
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
+
+### 0.2.1
+- Moved to a webview to render the information and flow
+- Output includes Constants, Variable and TextTemplates
+- Ouput includes Start conditions
+- Flow can be zoomed in/put
+- Flow can be saved as a .png file
+- Removed dependancy on [Markdown Preview Mermaid Support](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid) extension
+
 
 ### 0.1.0
 
