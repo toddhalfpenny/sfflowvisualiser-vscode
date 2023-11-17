@@ -1,5 +1,4 @@
 .vscode/**
-node_modules
 .vscode-test/**
 test/**
 src/**
@@ -7,6 +6,7 @@ src/**
 **/jsconfig.json
 **/*.map
 **/.eslintrc.json
+**/tsconfig.json
 **/*.ts
 **/*.d.ts
 .git/**
