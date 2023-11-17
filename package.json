@@ -2,10 +2,9 @@
   "name": "sfflowvisualiser",
   "displayName": "Salesforce Flow Visualiser",
   "description": "Salesforce Flow Visualiser VS Code extension",
-  "icon": "images/icon.png",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "engines": {
-    "vscode": "^1.84.0"
+    "vscode": "^1.83.0"
   },
   "categories": [
     "Visualization",
@@ -20,18 +19,18 @@
     "Diagram"
   ],
   "activationEvents": [],
-  "main": "/out/main.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "sfflowvisualiser.generateMermaid",
-        "title": "Flow Visualiser: Mermaid"
+        "command": "sfflowvisualiser.generateWebview",
+        "title": "Flow visualiser: Render"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "sfflowvisualiser.generateMermaid",
+          "command": "sfflowvisualiser.generateWebview",
           "when": "editorLangId == xml"
         }
       ]
@@ -44,32 +43,33 @@
     "url": "git@github.com:toddhalfpenny/sfflowvisualiser-vscode.git"
   },
   "publisher": "ToddHalfpenny",
-  "extensionDependencies": [
-    "bierner.markdown-mermaid"
-  ],
+  "extensionDependencies": [],
   "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "node ./test/runTest.js",
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild src/extension.js --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./"
+    "vscode:prepublish": "npm run package",
+    "compile": "node ./esbuild.js",
+    "package": "NODE_ENV=production node ./esbuild.js",
+    "watch": "node ./esbuild.js --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
-    "@types/vscode": "^1.83.0",
+    "@types/vscode": "1.83.0",
+    "@types/vscode-webview": "^1.57.4",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
-    "esbuild": "^0.19.5",
+    "esbuild": "^0.16.17",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.3.2",
-    "salesforce-flow-visualiser": "file:../salesforce-flow-visualiser"
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "mermaid": "10.4.0",
+    "salesforce-flow-visualiser": "github:toddhalfpenny/salesforce-flow-visualiser"
   }
 }

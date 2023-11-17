@@ -7,7 +7,9 @@ src/**
 **/jsconfig.json
 **/*.map
 **/.eslintrc.json
+**/tsconfig.json
 **/*.ts
 **/*.d.ts
 .git/**
 package.lock.json
+!node_modules/fast-xml-parser
