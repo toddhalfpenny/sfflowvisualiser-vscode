@@ -8,10 +8,18 @@ export class FlowPanel {
   private _disposables: vscode.Disposable[] = [];
   private _flowMap: any;
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, parsedXml:any) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    parsedXml: any,
+  ) {
     this._panel = panel;
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-    this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri, parsedXml);
+    this._panel.webview.html = this._getWebviewContent(
+      this._panel.webview,
+      extensionUri,
+      parsedXml,
+    );
     this._setWebviewMessageListener(this._panel.webview, parsedXml);
   }
 
@@ -34,16 +42,25 @@ export class FlowPanel {
     } else {
       // console.log('render');
       const flowMap = parsedXml.flowMap;
-      const panel = vscode.window.createWebviewPanel("flow-render", flowMap.label, vscode.ViewColumn.One, {
-        enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'out')]
-      });
+      const panel = vscode.window.createWebviewPanel(
+        "flow-render",
+        flowMap.label,
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+          localResourceRoots: [vscode.Uri.joinPath(extensionUri, "out")],
+        },
+      );
 
       FlowPanel.currentPanel = new FlowPanel(panel, extensionUri, parsedXml);
     }
   }
 
-  private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri, parsedXml:any) {
+  private _getWebviewContent(
+    webview: vscode.Webview,
+    extensionUri: vscode.Uri,
+    parsedXml: any,
+  ) {
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
     const nonce = getNonce();
     this._flowMap = parsedXml.flowMap;
@@ -61,7 +78,13 @@ export class FlowPanel {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: ${webview.cspSource} https:; script-src 'self' 'unsafe-inline' ${webview.cspSource} vscode-resource:; style-src 'self' 'unsafe-inline' ${webview.cspSource} vscode-resource: https:;" />
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: ${
+            webview.cspSource
+          } https:; script-src 'self' 'unsafe-inline' ${
+            webview.cspSource
+          } vscode-resource:; style-src 'self' 'unsafe-inline' ${
+            webview.cspSource
+          } vscode-resource: https:;" />
           <title>${this._flowMap.label}</title>
           <style>
             h2, summary {
@@ -136,10 +159,12 @@ export class FlowPanel {
     webview.onDidReceiveMessage(
       (message: any) => {
         const command = message.command;
-        const text = message.text;
         switch (command) {
           case "rendered":
-            this._panel.webview.postMessage({ command: 'parsedXml', message: this._flowMap });
+            this._panel.webview.postMessage({
+              command: "parsedXml",
+              message: this._flowMap,
+            });
             return;
           case "nodeClicked":
             // TODO - handle showing more info, perhaps in a side pane?
@@ -147,34 +172,40 @@ export class FlowPanel {
         }
       },
       undefined,
-      this._disposables
+      this._disposables,
     );
   }
 
   private getFlowType(flowMap: any): string {
-    if (flowMap.processType === 'Flow') {
-        return "Screen flow";
+    if (flowMap.processType === "Flow") {
+      return "Screen flow";
     } else {
-        switch ( flowMap.start.triggerType ) {
-            case "Scheduled":
-                return "Scheduled flow;";
-            case "RecordAfterSave":
-                return "Record triggered flow: After Save (" + flowMap.start.object + ")";
-            case "RecordBeforeSave":
-                return "Record triggered flow: Before Save (" + flowMap.start.object + ")";
-            case "PlatformEvent":
-                return "PlatformEvent triggered flow (" + flowMap.start.object + ")";
-            default:
-                return "Autolanuched flow - No trigger";
-        }
+      switch (flowMap.start.triggerType) {
+        case "Scheduled":
+          return "Scheduled flow;";
+        case "RecordAfterSave":
+          return (
+            "Record triggered flow: After Save (" + flowMap.start.object + ")"
+          );
+        case "RecordBeforeSave":
+          return (
+            "Record triggered flow: Before Save (" + flowMap.start.object + ")"
+          );
+        case "PlatformEvent":
+          return "PlatformEvent triggered flow (" + flowMap.start.object + ")";
+        default:
+          return "Autolaunched flow - No trigger";
+      }
     }
   }
 
-
-  private getStartConditions(start:any): string{
+  private getStartConditions(start: any): string {
     if (start.object) {
-      const recTriggerType = (start.recordTriggerType === "CreateAndUpdate") ? "Create and update" : start.recordTriggerType;
-      const filtersStr =  this.getFilterStr(start);
+      const recTriggerType =
+        start.recordTriggerType === "CreateAndUpdate"
+          ? "Create and update"
+          : start.recordTriggerType;
+      const filtersStr = this.getFilterStr(start);
 
       return /*html*/ `
         <details>
@@ -189,9 +220,9 @@ export class FlowPanel {
     }
   }
 
-  private getVariables(variables: any): string{
+  private getVariables(variables: any): string {
     if (variables) {
-      variables = (variables.length) ? variables : [variables];      
+      variables = variables.length ? variables : [variables];
       let variablestr = /*html*/ `
           <details>
           <summary>Variables</summary>
@@ -216,17 +247,16 @@ export class FlowPanel {
           </vscode-data-grid-row>
         `;
       }
-      variablestr += '</vscode-data-grid></details>';
+      variablestr += "</vscode-data-grid></details>";
       return variablestr;
     } else {
       return "";
     }
   }
 
-
-  private getConstants(constants: any): string{
+  private getConstants(constants: any): string {
     if (constants) {
-      constants = (constants.length) ? constants : [constants];      
+      constants = constants.length ? constants : [constants];
       let constantstr = /*html*/ `
           <details>
           <summary>Constants</summary>
@@ -237,7 +267,7 @@ export class FlowPanel {
               <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Value</vscode-data-grid-cell>
             </vscode-data-grid-row>`;
       for (const constant of constants) {
-        let constantValue = '';
+        let constantValue = "";
         for (const prop in constant.value) {
           constantValue = constant.value[prop];
         }
@@ -249,18 +279,17 @@ export class FlowPanel {
           </vscode-data-grid-row>
         `;
       }
-      constantstr += '</vscode-data-grid></details>';
+      constantstr += "</vscode-data-grid></details>";
       return constantstr;
     } else {
       return "";
     }
   }
-  
 
-  private getFormulas(formulas: any): string{
+  private getFormulas(formulas: any): string {
     if (formulas) {
-      formulas = (formulas.length) ? formulas : [formulas];
-      
+      formulas = formulas.length ? formulas : [formulas];
+
       let formulaStr = /*html*/ `
           <details>
           <summary >Formulas</summary>
@@ -271,7 +300,7 @@ export class FlowPanel {
         // var decoded = this.encodeHTML(formula.expression);
 
         console.log(formula.expression);
-        var decoded = formula.expression.replaceAll('"', '&quot;');
+        var decoded = formula.expression.replaceAll('"', "&quot;");
 
         formulaStr += /*html*/ ` 
           <div class="formula-item">
@@ -283,35 +312,37 @@ export class FlowPanel {
           </div>
         `;
       }
-      formulaStr += '</details>';
+      formulaStr += "</details>";
       return formulaStr;
     } else {
       return "";
     }
   }
 
-  private encodeHTML(str:any) {
+  private encodeHTML(str: any) {
     const code = {
-        ' ' : 'nbsp;',
-        '¢' : 'cent;',
-        '£' : 'pound;',
-        '¥' : 'yen;',
-        '€' : 'euro;', 
-        '©' : 'copy;',
-        '®' : 'reg;',
-        '<' : 'lt;', 
-        '>' : 'gt;',  
-        '"' : 'quot;', 
-        '\'' : 'apos;'
+      " ": "nbsp;",
+      "¢": "cent;",
+      "£": "pound;",
+      "¥": "yen;",
+      "€": "euro;",
+      "©": "copy;",
+      "®": "reg;",
+      "<": "lt;",
+      ">": "gt;",
+      '"': "quot;",
+      "'": "apos;",
     };
-    return str.replace(/[\u00A0-\u9999<>\&''""]/gm, (i:any)=>"&amp;" + (<any>code)[i]);
+    return str.replace(
+      /[\u00A0-\u9999<>\&''""]/gm,
+      (i: any) => "&amp;" + (<any>code)[i],
+    );
   }
 
-  
-  private getTextTemplates(textTemplates: any): string{
+  private getTextTemplates(textTemplates: any): string {
     if (textTemplates) {
-      textTemplates = (textTemplates.length) ? textTemplates : [textTemplates];
-      
+      textTemplates = textTemplates.length ? textTemplates : [textTemplates];
+
       let textTemplateStr = /*html*/ `
           <details>
           <summary >Text Templates</summary>
@@ -321,43 +352,49 @@ export class FlowPanel {
           <div class="text-template-item">
             <div>
               <p><label>Name:</label>${template.name}</p> 
-              ${(template.description ? ' <p><label>Description:</label>' + template.description + '</p>' : '')}
+              ${
+                template.description
+                  ? " <p><label>Description:</label>" +
+                    template.description +
+                    "</p>"
+                  : ""
+              }
               <p><label>Plain text:</label>${template.isViewedAsPlainText}</p>
             </div>
-            <vscode-text-area readonly cols="50" resize="both"  value="${template.text}"></vscode-text-area>
+            <vscode-text-area readonly cols="50" resize="both"  value="${
+              template.text
+            }"></vscode-text-area>
           </div>
         `;
       }
-      textTemplateStr += '</details>';
+      textTemplateStr += "</details>";
       return textTemplateStr;
     } else {
       return "";
     }
   }
 
-
-  private getFilterStr(start: any) : string {
-      let filterLogicStr = '';
-      if (start.filterFormula) {
-        return /*html*/ `
+  private getFilterStr(start: any): string {
+    let filterLogicStr = "";
+    if (start.filterFormula) {
+      return /*html*/ `
         <p><label>Formula:</label><span class="formula">${start.filterFormula}</span></p>
       `;
-      } else {
-        switch (start.filterLogic) {
-          case 'and':
-            filterLogicStr = "All conditions are met (AND)";
-            break;
-          case 'or':
-            filterLogicStr = "Any condition is met (OR)";
-            break;
-          case undefined:
-            return filterLogicStr;
-            break;
-          default:
-            filterLogicStr = start.filterLogic;
-        }
-        
-        let filtersStr = /*html*/ `
+    } else {
+      switch (start.filterLogic) {
+        case "and":
+          filterLogicStr = "All conditions are met (AND)";
+          break;
+        case "or":
+          filterLogicStr = "Any condition is met (OR)";
+          break;
+        case undefined:
+          return filterLogicStr;
+          break;
+          deflt: filterLogicStr = start.filterLogic;
+      }
+
+      let filtersStr = /*html*/ `
           <vscode-data-grid id="filters-grid" generate-header="sticky" aria-label="Filters">
             <vscode-data-grid-row row-type="header">
             <vscode-data-grid-cell cell-type="columnheader" grid-column="1"></vscode-data-grid-cell>
@@ -365,34 +402,39 @@ export class FlowPanel {
             <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Operator</vscode-data-grid-cell>
             <vscode-data-grid-cell cell-type="columnheader" grid-column="4">Value</vscode-data-grid-cell>
           </vscode-data-grid-row>`;
-        start.filters = (start.filters.length) ? start.filters : [start.filters];
-        let i = 1;
-        for (const filter of start.filters) {
-          let filterValue = '';
-          for (const prop in filter.value) {
-            filterValue = filter.value[prop];
-          }
-          filtersStr += /*html*/ `
+      start.filters = start.filters.length ? start.filters : [start.filters];
+      let i = 1;
+      for (const filter of start.filters) {
+        let filterValue = "";
+        for (const prop in filter.value) {
+          filterValue = filter.value[prop];
+        }
+        filtersStr += /*html*/ `
             <vscode-data-grid-row>
               <vscode-data-grid-cell grid-column="1">${i}</vscode-data-grid-cell>
-              <vscode-data-grid-cell grid-column="2">${filter.field}</vscode-data-grid-cell>
-              <vscode-data-grid-cell grid-column="3">${this.splitAndCapitalise(filter.operator)}</vscode-data-grid-cell>
+              <vscode-data-grid-cell grid-column="2">${
+                filter.field
+              }</vscode-data-grid-cell>
+              <vscode-data-grid-cell grid-column="3">${this.splitAndCapitalise(
+                filter.operator,
+              )}</vscode-data-grid-cell>
               <vscode-data-grid-cell grid-column="4">${filterValue}</vscode-data-grid-cell>
             </vscode-data-grid-row>
           `;
-          i ++;
-        }
-        filtersStr += '</vscode-data-grid>';
-      
-        return /*html*/ `
+        i++;
+      }
+      filtersStr += "</vscode-data-grid>";
+
+      return /*html*/ `
           <p><label>Conditions:</label>${filterLogicStr}</p>
           ${filtersStr}
         `;
-      }
+    }
   }
 
   private splitAndCapitalise(str: string): string {
-    return str.replace(/([A-Z])/g, ' $1')
-      .replace(/^./, function(str){ return str.toUpperCase(); });
+    return str.replace(/([A-Z])/g, " $1").replace(/^./, function (str) {
+      return str.toUpperCase();
+    });
   }
 }
